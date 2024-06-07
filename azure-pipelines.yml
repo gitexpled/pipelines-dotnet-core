@@ -16,21 +16,17 @@ steps:
     ls -al $(Build.SourcesDirectory)
   displayName: 'List files for debugging'
 
-- task: SSH@0
-  inputs:
-    sshEndpoint: 'server qa'
-    runOptions: inline
-    inline: |
-      echo "Creating target directory and setting permissions..."
-      mkdir -p /var/www/html/sodexo
-      chmod -R 777 /var/www/html/sodexo
-      ls -al /var/www/html
-  displayName: 'Create target directory and set permissions'
+- script: |
+    echo "Installing dependencies and building the project..."
+    npm install
+    npm run build
+  workingDirectory: $(Build.SourcesDirectory)
+  displayName: 'Build Project'
 
 - task: CopyFilesOverSSH@0
   inputs:
     sshEndpoint: 'server qa'
-    sourceFolder: '$(Build.SourcesDirectory)'
+    sourceFolder: '$(Build.SourcesDirectory)/build'
     contents: '**'
     targetFolder: '/var/www/html/sodexo'
     cleanTargetFolder: true
@@ -41,18 +37,8 @@ steps:
     sshEndpoint: 'server qa'
     runOptions: inline
     inline: |
-      echo "Installing dependencies and building application..."
-      cd /var/www/html/sodexo
-      npm install
-      npm run build
-  displayName: 'Install Dependencies and Build Application on Server'
-
-- task: SSH@0
-  inputs:
-    sshEndpoint: 'server qa'
-    runOptions: inline
-    inline: |
       echo "Starting application..."
       cd /var/www/html/sodexo
+      npm install
       npm start
   displayName: 'Start Application on Server'
