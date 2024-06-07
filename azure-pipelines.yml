@@ -12,15 +12,15 @@ steps:
   displayName: 'Install Node.js'
 
 - script: |
-    cd app
     npm install
     npm run build
+  workingDirectory: $(Build.SourcesDirectory)
   displayName: 'npm install and build'
 
 - task: CopyFilesOverSSH@0
   inputs:
     sshEndpoint: 'server qa'
-    sourceFolder: '$(Build.ArtifactStagingDirectory)/app'
+    sourceFolder: '$(Build.SourcesDirectory)'
     contents: '**'
     targetFolder: '/var/www/html/sodexo'
     cleanTargetFolder: true
