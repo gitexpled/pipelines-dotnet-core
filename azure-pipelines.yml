@@ -18,6 +18,13 @@ steps:
   workingDirectory: $(Build.SourcesDirectory)
   displayName: 'npm install and build'
 
+- task: SSH@0
+  inputs:
+    sshEndpoint: 'server qa'
+    script: |
+      mkdir -p /var/www/html/sodexo
+  displayName: 'Create target directory if it does not exist'
+
 - task: CopyFilesOverSSH@0
   inputs:
     sshEndpoint: 'server qa'
