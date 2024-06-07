@@ -12,10 +12,19 @@ steps:
   displayName: 'Install Node.js'
 
 - script: |
+    echo "Listing files in the root of the build sources directory:"
     ls -al $(Build.SourcesDirectory)
+
+    echo "Listing files in the 'BASE-REACT' directory if it exists:"
+    ls -al $(Build.SourcesDirectory)/BASE-REACT || true
+
+    echo "Current working directory: $(Build.SourcesDirectory)"
+  displayName: 'List files for debugging'
+
+- script: |
     npm install
     npm run build
-  workingDirectory: $(Build.SourcesDirectory)
+  workingDirectory: $(Build.SourcesDirectory)/BASE-REACT
   displayName: 'npm install and build'
 
 - task: SSH@0
@@ -30,7 +39,7 @@ steps:
 - task: CopyFilesOverSSH@0
   inputs:
     sshEndpoint: 'server qa'
-    sourceFolder: '$(Build.SourcesDirectory)'
+    sourceFolder: '$(Build.SourcesDirectory)/BASE-REACT'
     contents: '**'
     targetFolder: '/var/www/html/sodexo'
     cleanTargetFolder: true
