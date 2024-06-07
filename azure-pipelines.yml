@@ -12,6 +12,7 @@ steps:
   displayName: 'Install Node.js'
 
 - script: |
+    ls -al $(Build.SourcesDirectory)
     npm install
     npm run build
   workingDirectory: $(Build.SourcesDirectory)
