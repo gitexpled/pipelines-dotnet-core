@@ -15,6 +15,15 @@ steps:
     ls -al $(Build.SourcesDirectory)
   displayName: 'List files for debugging'
 
+- task: SSH@0
+  inputs:
+    sshEndpoint: 'server qa'
+    script: |
+      mkdir -p /var/www/html/sodexo
+      chmod -R 777 /var/www/html/sodexo
+      ls -al /var/www/html
+  displayName: 'Create target directory and set permissions'
+
 - task: CopyFilesOverSSH@0
   inputs:
     sshEndpoint: 'server qa'
@@ -28,8 +37,6 @@ steps:
   inputs:
     sshEndpoint: 'server qa'
     script: |
-      mkdir -p /var/www/html/sodexo
-      chmod -R 777 /var/www/html/sodexo
       cd /var/www/html/sodexo
       npm install
       npm run build
