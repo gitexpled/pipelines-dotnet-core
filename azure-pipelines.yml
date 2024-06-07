@@ -12,13 +12,16 @@ steps:
   displayName: 'Install Node.js'
 
 - script: |
+    echo "Listing files in the build sources directory:"
     ls -al $(Build.SourcesDirectory)
   displayName: 'List files for debugging'
 
 - task: SSH@0
   inputs:
     sshEndpoint: 'server qa'
-    script: |
+    runOptions: inline
+    inline: |
+      echo "Creating target directory and setting permissions..."
       mkdir -p /var/www/html/sodexo
       chmod -R 777 /var/www/html/sodexo
       ls -al /var/www/html
@@ -36,7 +39,9 @@ steps:
 - task: SSH@0
   inputs:
     sshEndpoint: 'server qa'
-    script: |
+    runOptions: inline
+    inline: |
+      echo "Installing dependencies and building application..."
       cd /var/www/html/sodexo
       npm install
       npm run build
@@ -45,7 +50,9 @@ steps:
 - task: SSH@0
   inputs:
     sshEndpoint: 'server qa'
-    script: |
+    runOptions: inline
+    inline: |
+      echo "Starting application..."
       cd /var/www/html/sodexo
       npm start
   displayName: 'Start Application on Server'
