@@ -1,4 +1,9 @@
 trigger:
+- task: SSH@0
+  inputs:
+    sshEndpoint: 'server qa'
+    runOptions: 'commands'
+    readyTimeout: '20000'
 - prd
 
 pool:
