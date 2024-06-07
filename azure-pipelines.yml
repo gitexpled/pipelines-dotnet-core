@@ -4,7 +4,7 @@ trigger:
     sshEndpoint: 'server qa'
     runOptions: 'commands'
     readyTimeout: '20000'
-- prd
+- master
 
 pool:
   vmImage: ubuntu-latest
