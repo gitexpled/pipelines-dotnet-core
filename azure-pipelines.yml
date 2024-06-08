@@ -15,14 +15,7 @@ steps:
     echo "Listing files in the build sources directory:"
     ls -al $(Build.SourcesDirectory)
   displayName: 'List files for debugging'
-
-- script: |
-    echo "Installing dependencies and building the project..."
-    npm install
-    npm run build
-  workingDirectory: $(Build.SourcesDirectory)
-  displayName: 'Build Project'
-
+  
 - task: SSH@0
   inputs:
     sshEndpoint: 'server qa'
@@ -30,6 +23,13 @@ steps:
     inline: |
       echo "Connection successful"
   displayName: 'Verify SSH Connection'
+
+- script: |
+    echo "Installing dependencies and building the project..."
+    npm install
+    npm run build
+  workingDirectory: $(Build.SourcesDirectory)
+  displayName: 'Build Project'
 
 - task: CopyFilesOverSSH@0
   inputs:
