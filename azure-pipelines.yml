@@ -23,6 +23,14 @@ steps:
   workingDirectory: $(Build.SourcesDirectory)
   displayName: 'Build Project'
 
+- task: SSH@0
+  inputs:
+    sshEndpoint: 'server qa'
+    runOptions: inline
+    inline: |
+      echo "Connection successful"
+  displayName: 'Verify SSH Connection'
+
 - task: CopyFilesOverSSH@0
   inputs:
     sshEndpoint: 'server qa'
