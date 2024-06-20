@@ -12,11 +12,6 @@ steps:
   displayName: 'Install Node.js'
 
 - script: |
-    echo "Getting public IP address..."
-    curl -s http://ifconfig.me
-  displayName: 'Get Public IP Address'
-
-- script: |
     echo "Listing files in the build sources directory:"
     ls -al $(Build.SourcesDirectory)
   displayName: 'List files for debugging'
