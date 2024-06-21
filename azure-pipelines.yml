@@ -19,6 +19,9 @@ steps:
       mkdir -p ~/.ssh
       echo "${GITHUB_SSH_KEY}" > ~/.ssh/id_rsa
       chmod 600 ~/.ssh/id_rsa
+      # Eliminar cualquier clave previa de GitHub
+      ssh-keygen -R github.com
+      ssh-keygen -R ssh.github.com
       ssh-keyscan -t rsa -p 443 github.com >> ~/.ssh/known_hosts
       echo "Host github.com" >> ~/.ssh/config
       echo "  Hostname ssh.github.com" >> ~/.ssh/config
@@ -31,7 +34,7 @@ steps:
       fi
       echo "Contents of known_hosts:"
       cat ~/.ssh/known_hosts
-      ssh -T -p 443 git@ssh.github.com || { echo "SSH connection to GitHub failed. Aborting."; exit 1; }
+      GIT_SSH_COMMAND="ssh -vvv -F ~/.ssh/config" ssh -T git@github.com || { echo "SSH connection to GitHub failed. Aborting."; exit 1; }
   displayName: 'Set up SSH key for GitHub'
 
 - task: SSH@0
