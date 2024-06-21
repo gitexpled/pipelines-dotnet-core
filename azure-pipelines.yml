@@ -13,16 +13,21 @@ steps:
     echo "Printing environment variables..."
     echo "BRANCH_NAME: $(BRANCH_NAME)"
     echo "REPO_URL: $(REPO_URL)"
-    echo "GITHUB_PAT $(GITHUB_PAT)"
+    echo "GITHUB_PAT is set"  # No imprimir el valor para mantener la seguridad
     echo "FOLDER_PROJECT: $(FOLDER_PROJECT)"
+    echo "GIT_USERNAME: $(GIT_USERNAME)"
+    echo "GIT_EMAIL: $(GIT_EMAIL)"
   displayName: 'Print environment variables'
 
 - task: SSH@0
   inputs:
     sshEndpoint: 'server qa'
-    port: 25536 # Puerto del servidor
+    port: 25536
     runOptions: inline
     inline: |
+      echo "Setting up Git global configuration..."
+      git config --global user.name "$(GIT_USERNAME)"
+      git config --global user.email "$(GIT_EMAIL)"
       echo "Cloning repository and switching to branch..."
       mkdir -p ~/project/$(FOLDER_PROJECT)
       cd ~/project/$(FOLDER_PROJECT)
@@ -43,7 +48,7 @@ steps:
 - task: SSH@0
   inputs:
     sshEndpoint: 'server qa'
-    port: 25536 # Puerto del servidor
+    port: 25536
     runOptions: inline
     inline: |
       export NVM_DIR="$HOME/.nvm"
@@ -58,7 +63,7 @@ steps:
 - task: SSH@0
   inputs:
     sshEndpoint: 'server qa'
-    port: 25536 # Puerto del servidor
+    port: 25536
     runOptions: inline
     inline: |
       echo "Starting application to verify it runs correctly..."
@@ -76,7 +81,7 @@ steps:
 - task: SSH@0
   inputs:
     sshEndpoint: 'server qa'
-    port: 25536 # Puerto del servidor
+    port: 25536
     runOptions: inline
     inline: |
       echo "Building the project..."
@@ -87,7 +92,7 @@ steps:
 - task: SSH@0
   inputs:
     sshEndpoint: 'server qa'
-    port: 25536 # Puerto del servidor
+    port: 25536
     runOptions: inline
     inline: |
       echo "Creating directory /var/www/html/sodexo if it does not exist..."
