@@ -15,55 +15,11 @@ steps:
     port: 25536 # Puerto del servidor
     runOptions: inline
     inline: |
-      echo "Setting up SSH key for GitHub..."
-      mkdir -p ~/.ssh
-      # Guardar la clave privada en un archivo temporal para verificación
-      echo "${GITHUB_SSH_KEY}" | tr -d '\r' > ~/.ssh/id_rsa_temp
-      # Mostrar la clave para verificar su formato
-      echo "Contents of id_rsa_temp:"
-      cat ~/.ssh/id_rsa_temp
-      # Verificar que la clave se haya guardado correctamente
-      ssh-keygen -y -f ~/.ssh/id_rsa_temp > /dev/null 2>&1
-      if [ $? -ne 0 ]; then
-        echo "SSH key is invalid. Aborting."
-        exit 1
-      else
-        mv ~/.ssh/id_rsa_temp ~/.ssh/id_rsa
-        chmod 600 ~/.ssh/id_rsa
-      fi
-      # Eliminar cualquier clave previa de GitHub
-      ssh-keygen -R github.com || true
-      ssh-keygen -R ssh.github.com || true
-      ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
-      ssh-keyscan -t rsa -p 443 ssh.github.com >> ~/.ssh/known_hosts
-      echo "Host github.com" > ~/.ssh/config
-      echo "  Hostname github.com" >> ~/.ssh/config
-      echo "  User git" >> ~/.ssh/config
-      echo "Host ssh.github.com" >> ~/.ssh/config
-      echo "  Hostname ssh.github.com" >> ~/.ssh/config
-      echo "  Port 443" >> ~/.ssh/config
-      echo "  User git" >> ~/.ssh/config
-      echo "SSH key setup completed. Verifying..."
-      if [ ! -f ~/.ssh/id_rsa ]; then
-        echo "SSH key file not found. Aborting."
-        exit 1
-      fi
-      echo "Contents of known_hosts:"
-      cat ~/.ssh/known_hosts
-      GIT_SSH_COMMAND="ssh -vvv -F ~/.ssh/config" ssh -T git@github.com || { echo "SSH connection to GitHub failed. Aborting."; exit 1; }
-  displayName: 'Set up SSH key for GitHub'
-
-- task: SSH@0
-  inputs:
-    sshEndpoint: 'server qa'
-    port: 25536 # Puerto del servidor
-    runOptions: inline
-    inline: |
       echo "Cloning repository and switching to branch..."
       mkdir -p ~/project
       cd ~/project
       if [ ! -d .git ]; then
-        git clone ${REPO_URL} .
+        git clone https://$GITHUB_PAT:x-oauth-basic@github.com/${REPO_URL}.git .
       fi
       git checkout ${BRANCH_NAME}
       git pull origin ${BRANCH_NAME}
