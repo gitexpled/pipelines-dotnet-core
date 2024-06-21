@@ -43,18 +43,12 @@ steps:
         current_branch=$(git rev-parse --abbrev-ref HEAD)
         if [ "$current_branch" != "$(BRANCH_NAME)" ]; then
           echo "Switching to branch $(BRANCH_NAME)..."
-          git fetch origin || true
-          git checkout $(BRANCH_NAME) || true
+          git fetch origin
+          git checkout $(BRANCH_NAME)
         else
           echo "Already on branch $(BRANCH_NAME), pulling latest changes..."
-          git pull origin $(BRANCH_NAME) || true
+          git pull origin $(BRANCH_NAME) 2>&1 | grep -v 'Already up to date' || true
         fi
-      fi
-
-      # Ignorar mensaje de "Already up to date"
-      git_status=$(git status)
-      if echo "$git_status" | grep -q "Your branch is up to date"; then
-        echo "Branch is already up to date, continuing..."
       fi
   displayName: 'Clone GitHub repository and pull latest changes'
 
@@ -113,4 +107,6 @@ steps:
       sudo chown $(whoami):$(whoami) /var/www/html/sodexo
       echo "Cleaning up old files..."
       sudo rm -rf /var/www/html/sodexo/*
-      e
+      echo "Copying built files to /var/www/html/sodexo..."
+      sudo cp -r ~/project/$(FOLDER_PROJECT)/build/* /var/www/html/sodexo/
+  displayName: 'Copy built files to destination'
