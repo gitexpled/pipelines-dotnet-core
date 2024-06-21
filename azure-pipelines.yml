@@ -19,6 +19,12 @@ steps:
       echo "${GITHUB_SSH_KEY}" > ~/.ssh/id_rsa
       chmod 600 ~/.ssh/id_rsa
       ssh-keyscan github.com >> ~/.ssh/known_hosts
+      echo "SSH key setup completed. Verifying..."
+      if [ ! -f ~/.ssh/id_rsa ]; then
+        echo "SSH key file not found. Aborting."
+        exit 1
+      fi
+      ssh -T git@github.com || { echo "SSH connection to GitHub failed. Aborting."; exit 1; }
   displayName: 'Set up SSH key for GitHub'
 
 - task: SSH@0
