@@ -13,7 +13,7 @@ steps:
     echo "Printing environment variables..."
     echo "BRANCH_NAME: $(BRANCH_NAME)"
     echo "REPO_URL: $(REPO_URL)"
-    echo "GITHUB_PAT : $(GITHUB_PAT)"  # No imprimir el valor para mantener la seguridad
+    echo "GITHUB_PAT is set"  # No imprimir el valor para mantener la seguridad
     echo "FOLDER_PROJECT: $(FOLDER_PROJECT)"
   displayName: 'Print environment variables'
 
@@ -29,10 +29,12 @@ steps:
       if [ ! -d .git ]; then
         REPO_URL=$(echo $(REPO_URL) | sed 's|https://||')
         git clone https://$(GITHUB_PAT):x-oauth-basic@$REPO_URL .
+        git checkout $(BRANCH_NAME)
       else
+        echo "Repository already cloned, fetching and switching to branch..."
         git fetch origin
+        git checkout $(BRANCH_NAME)
       fi
-      git checkout $(BRANCH_NAME)
       git pull origin $(BRANCH_NAME)
   displayName: 'Clone GitHub repository and pull latest changes'
 
