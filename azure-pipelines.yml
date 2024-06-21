@@ -19,7 +19,7 @@ steps:
       mkdir -p ~/.ssh
       echo "${GITHUB_SSH_KEY}" > ~/.ssh/id_rsa
       chmod 600 ~/.ssh/id_rsa
-      ssh-keyscan -p 443 github.com >> ~/.ssh/known_hosts
+      ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
       echo "Host github.com" >> ~/.ssh/config
       echo "  Hostname ssh.github.com" >> ~/.ssh/config
       echo "  Port 443" >> ~/.ssh/config
