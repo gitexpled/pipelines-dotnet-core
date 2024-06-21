@@ -6,9 +6,9 @@ pool:
   vmImage: ubuntu-latest
 
 variables:
-  GITHUB_SSH_KEY: $(GITHUB_SSH_KEY) # Define la variable en Azure DevOps
-  BRANCH_NAME: $(BRANCH_NAME) # Define la variable en Azure DevOps
-  REPO_URL: $(REPO_URL) # Define la variable en Azure DevOps
+  GITHUB_SSH_KEY: $(GITHUB_SSH_KEY) # Definido en Azure DevOps
+  BRANCH_NAME_QAS: $(BRANCH_NAME_QAS) # Definido en Azure DevOps
+  REPO_URL: $(REPO_URL) # Definido en Azure DevOps
 
 steps:
 - task: SSH@0
@@ -18,7 +18,7 @@ steps:
     inline: |
       echo "Setting up SSH key for GitHub..."
       mkdir -p ~/.ssh
-      echo "$GITHUB_SSH_KEY" > ~/.ssh/id_rsa
+      echo "$(GITHUB_SSH_KEY)" > ~/.ssh/id_rsa
       chmod 600 ~/.ssh/id_rsa
       ssh-keyscan github.com >> ~/.ssh/known_hosts
   displayName: 'Set up SSH key for GitHub'
@@ -32,10 +32,10 @@ steps:
       mkdir -p ~/project
       cd ~/project
       if [ ! -d .git ]; then
-        git clone $REPO_URL .
+        git clone $(REPO_URL) .
       fi
-      git checkout $BRANCH_NAME
-      git pull origin $BRANCH_NAME
+      git checkout $(BRANCH_NAME_QAS)
+      git pull origin $(BRANCH_NAME_QAS)
   displayName: 'Clone GitHub repository and pull latest changes'
 
 - task: SSH@0
@@ -49,7 +49,7 @@ steps:
       nvm use 18.20.3
       echo "Installing dependencies..."
       cd ~/project
-      npm install
+      npm install || { echo "npm install failed, aborting."; exit 1; }
   displayName: 'Install npm dependencies'
 
 - task: SSH@0
