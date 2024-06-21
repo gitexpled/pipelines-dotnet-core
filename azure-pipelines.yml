@@ -47,7 +47,7 @@ steps:
           git checkout $(BRANCH_NAME)
         else
           echo "Already on branch $(BRANCH_NAME), pulling latest changes..."
-          git pull origin $(BRANCH_NAME)
+          git pull origin $(BRANCH_NAME) || true
         fi
       fi
   displayName: 'Clone GitHub repository and pull latest changes'
