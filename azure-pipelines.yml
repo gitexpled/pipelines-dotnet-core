@@ -15,11 +15,19 @@ steps:
     port: 25536 # Puerto del servidor
     runOptions: inline
     inline: |
+      if [ -z "$REPO_URL" ]; then
+        echo "Error: REPO_URL is not set"
+        exit 1
+      fi
+      if [ -z "$BRANCH_NAME" ]; then
+        echo "Error: BRANCH_NAME is not set"
+        exit 1
+      fi
       echo "Cloning repository and switching to branch..."
       mkdir -p ~/project
       cd ~/project
       if [ ! -d .git ]; then
-        git clone https://$GITHUB_PAT:x-oauth-basic@github.com/${REPO_URL}.git .
+        git clone https://$GITHUB_PAT:x-oauth-basic@${REPO_URL} .
       fi
       git checkout ${BRANCH_NAME}
       git pull origin ${BRANCH_NAME}
