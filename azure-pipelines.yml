@@ -20,6 +20,9 @@ steps:
       echo "${GITHUB_SSH_KEY}" > ~/.ssh/id_rsa
       chmod 600 ~/.ssh/id_rsa
       ssh-keyscan github.com >> ~/.ssh/known_hosts
+      echo "Host github.com" >> ~/.ssh/config
+      echo "  Hostname ssh.github.com" >> ~/.ssh/config
+      echo "  Port 25536" >> ~/.ssh/config
       echo "SSH key setup completed. Verifying..."
       if [ ! -f ~/.ssh/id_rsa ]; then
         echo "SSH key file not found. Aborting."
