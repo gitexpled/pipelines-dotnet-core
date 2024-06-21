@@ -34,12 +34,17 @@ steps:
         git clone https://$(GITHUB_PAT)@$(REPO_URL) .
         git checkout $(BRANCH_NAME)
       else
-        echo "Repository already cloned, fetching and switching to branch..."
-        git fetch origin
-        git checkout $(BRANCH_NAME)
+        echo "Repository already cloned, checking status..."
+        current_branch=$(git rev-parse --abbrev-ref HEAD)
+        if [ "$current_branch" != "$(BRANCH_NAME)" ]; then
+          echo "Switching to branch $(BRANCH_NAME)..."
+          git fetch origin
+          git checkout $(BRANCH_NAME)
+        else
+          echo "Already on branch $(BRANCH_NAME), pulling latest changes..."
+          git pull origin $(BRANCH_NAME)
+        fi
       fi
-      echo "Pulling latest changes..."
-      git pull origin $(BRANCH_NAME)
   displayName: 'Clone GitHub repository and pull latest changes'
 
 - task: SSH@0
