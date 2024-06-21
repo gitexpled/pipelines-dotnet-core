@@ -15,8 +15,6 @@ steps:
     echo "REPO_URL: $(REPO_URL)"
     echo "GITHUB_PAT is set"  # No imprimir el valor para mantener la seguridad
     echo "FOLDER_PROJECT: $(FOLDER_PROJECT)"
-    echo "GIT_USERNAME: $(GIT_USERNAME)"
-    echo "GIT_EMAIL: $(GIT_EMAIL)"
   displayName: 'Print environment variables'
 
 - task: SSH@0
@@ -25,16 +23,12 @@ steps:
     port: 25536
     runOptions: inline
     inline: |
-      echo "Setting up Git global configuration..."
-      git config --global user.name "$(GIT_USERNAME)"
-      git config --global user.email "$(GIT_EMAIL)"
       echo "Cloning repository and switching to branch..."
       mkdir -p ~/project/$(FOLDER_PROJECT)
       cd ~/project/$(FOLDER_PROJECT)
       if [ ! -d .git ]; then
         echo "Cloning repository for the first time..."
-        REPO_URL=$(echo $(REPO_URL) | sed 's|https://||')
-        git clone https://$(GITHUB_PAT):x-oauth-basic@$REPO_URL .
+        git clone https://$(GITHUB_PAT)@$(REPO_URL) .
         git checkout $(BRANCH_NAME)
       else
         echo "Repository already cloned, fetching and switching to branch..."
