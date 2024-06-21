@@ -30,6 +30,7 @@ steps:
 - task: SSH@0
   inputs:
     sshEndpoint: 'server qa'
+    port: 25536 # Puerto del servidor
     runOptions: inline
     inline: |
       echo "Cloning repository and switching to branch..."
@@ -45,6 +46,7 @@ steps:
 - task: SSH@0
   inputs:
     sshEndpoint: 'server qa'
+    port: 25536 # Puerto del servidor
     runOptions: inline
     inline: |
       export NVM_DIR="$HOME/.nvm"
@@ -59,6 +61,7 @@ steps:
 - task: SSH@0
   inputs:
     sshEndpoint: 'server qa'
+    port: 25536 # Puerto del servidor
     runOptions: inline
     inline: |
       echo "Starting application to verify it runs correctly..."
@@ -76,6 +79,7 @@ steps:
 - task: SSH@0
   inputs:
     sshEndpoint: 'server qa'
+    port: 25536 # Puerto del servidor
     runOptions: inline
     inline: |
       echo "Building the project..."
@@ -86,6 +90,7 @@ steps:
 - task: SSH@0
   inputs:
     sshEndpoint: 'server qa'
+    port: 25536 # Puerto del servidor
     runOptions: inline
     inline: |
       echo "Creating directory /var/www/html/sodexo if it does not exist..."
