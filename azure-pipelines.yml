@@ -7,8 +7,6 @@ pool:
 
 variables:
 - group: devSodexo
-- name: FOLDER_PROJECT
-  value: sodexo
 
 steps:
 - script: |
@@ -31,6 +29,8 @@ steps:
       if [ ! -d .git ]; then
         REPO_URL=$(echo $(REPO_URL) | sed 's|https://||')
         git clone https://$(GITHUB_PAT):x-oauth-basic@$REPO_URL .
+      else
+        git fetch origin
       fi
       git checkout $(BRANCH_NAME)
       git pull origin $(BRANCH_NAME)
