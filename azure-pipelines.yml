@@ -76,6 +76,9 @@ steps:
     runOptions: inline
     inline: |
       echo "Building the project..."
+      export NVM_DIR="$HOME/.nvm"
+      [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+      nvm use 18.20.3
       cd ~/project/$(FOLDER_PROJECT)
       npm run build > build.log 2>&1 || { echo "Build failed, aborting."; cat build.log; exit 1; }
   displayName: 'Build the project'
