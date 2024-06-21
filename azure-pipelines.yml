@@ -13,7 +13,7 @@ steps:
     echo "Printing environment variables..."
     echo "BRANCH_NAME: $(BRANCH_NAME)"
     echo "REPO_URL: $(REPO_URL)"
-    echo "GITHUB_PAT: $(GITHUB_PAT)"
+    echo "GITHUB_PAT is set"  # No imprimimos el valor del PAT para mayor seguridad
   displayName: 'Print environment variables'
 
 - task: SSH@0
