@@ -19,7 +19,7 @@ steps:
       mkdir -p ~/.ssh
       echo "${GITHUB_SSH_KEY}" > ~/.ssh/id_rsa
       chmod 600 ~/.ssh/id_rsa
-      ssh-keyscan github.com >> ~/.ssh/known_hosts
+      ssh-keyscan -p 443 github.com >> ~/.ssh/known_hosts
       echo "Host github.com" >> ~/.ssh/config
       echo "  Hostname ssh.github.com" >> ~/.ssh/config
       echo "  Port 443" >> ~/.ssh/config
@@ -28,7 +28,7 @@ steps:
         echo "SSH key file not found. Aborting."
         exit 1
       fi
-      ssh -T git@github.com || { echo "SSH connection to GitHub failed. Aborting."; exit 1; }
+      ssh -T -p 443 git@ssh.github.com || { echo "SSH connection to GitHub failed. Aborting."; exit 1; }
   displayName: 'Set up SSH key for GitHub'
 
 - task: SSH@0
