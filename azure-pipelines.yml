@@ -43,8 +43,8 @@ steps:
         current_branch=$(git rev-parse --abbrev-ref HEAD)
         if [ "$current_branch" != "$(BRANCH_NAME)" ]; then
           echo "Switching to branch $(BRANCH_NAME)..."
-          git fetch origin
-          git checkout $(BRANCH_NAME)
+          git fetch origin || true
+          git checkout $(BRANCH_NAME) || true
         else
           echo "Already on branch $(BRANCH_NAME), pulling latest changes..."
           git pull origin $(BRANCH_NAME) || true
