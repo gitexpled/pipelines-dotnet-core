@@ -43,14 +43,13 @@ steps:
         current_branch=$(git rev-parse --abbrev-ref HEAD)
         if [ "$current_branch" != "$(BRANCH_NAME)" ]; then
           echo "Switching to branch $(BRANCH_NAME)..."
-          git fetch origin || true
-          git checkout $(BRANCH_NAME) || true
+          git fetch origin
+          git checkout $(BRANCH_NAME)
         else
           echo "Already on branch $(BRANCH_NAME), pulling latest changes..."
-          git pull origin $(BRANCH_NAME) || true
+          git pull origin $(BRANCH_NAME) 2>&1 | grep -v 'Already up to date' || true
         fi
       fi
-      echo "Branch is already up to date, continuing..."
   displayName: 'Clone GitHub repository and pull latest changes'
 
 - task: SSH@0
