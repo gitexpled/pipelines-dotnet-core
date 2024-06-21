@@ -16,7 +16,7 @@ steps:
     inline: |
       echo "Setting up SSH key for GitHub..."
       mkdir -p ~/.ssh
-      echo "$(GITHUB_SSH_KEY)" > ~/.ssh/id_rsa
+      echo "${GITHUB_SSH_KEY}" > ~/.ssh/id_rsa
       chmod 600 ~/.ssh/id_rsa
       ssh-keyscan github.com >> ~/.ssh/known_hosts
   displayName: 'Set up SSH key for GitHub'
@@ -30,10 +30,10 @@ steps:
       mkdir -p ~/project
       cd ~/project
       if [ ! -d .git ]; then
-        git clone $(REPO_URL) .
+        git clone ${REPO_URL} .
       fi
-      git checkout $(BRANCH_NAME)
-      git pull origin $(BRANCH_NAME)
+      git checkout ${BRANCH_NAME}
+      git pull origin ${BRANCH_NAME}
   displayName: 'Clone GitHub repository and pull latest changes'
 
 - task: SSH@0
