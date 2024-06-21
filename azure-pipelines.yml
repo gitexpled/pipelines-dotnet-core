@@ -15,19 +15,45 @@ steps:
     port: 25536 # Puerto del servidor
     runOptions: inline
     inline: |
-      if [ -z "$REPO_URL" ]; then
-        echo "Error: REPO_URL is not set"
+      echo "Printing environment variables..."
+      echo "BRANCH_NAME: ${BRANCH_NAME}"
+      echo "REPO_URL: ${REPO_URL}"
+      echo "GITHUB_PAT: ${GITHUB_PAT}"
+  displayName: 'Print environment variables'
+
+- task: SSH@0
+  inputs:
+    sshEndpoint: 'server qa'
+    port: 25536 # Puerto del servidor
+    runOptions: inline
+    inline: |
+      echo "Setting up SSH key for GitHub..."
+      mkdir -p ~/.ssh
+      echo "${GITHUB_SSH_KEY}" > ~/.ssh/id_rsa
+      chmod 600 ~/.ssh/id_rsa
+      ssh-keyscan github.com >> ~/.ssh/known_hosts
+      echo "Host github.com" >> ~/.ssh/config
+      echo "  Hostname ssh.github.com" >> ~/.ssh/config
+      echo "  Port 443" >> ~/.ssh/config
+      echo "SSH key setup completed. Verifying..."
+      if [ ! -f ~/.ssh/id_rsa ]; then
+        echo "SSH key file not found. Aborting."
         exit 1
       fi
-      if [ -z "$BRANCH_NAME" ]; then
-        echo "Error: BRANCH_NAME is not set"
-        exit 1
-      fi
+      ssh -T git@github.com || { echo "SSH connection to GitHub failed. Aborting."; exit 1; }
+  displayName: 'Set up SSH key for GitHub'
+
+- task: SSH@0
+  inputs:
+    sshEndpoint: 'server qa'
+    port: 25536 # Puerto del servidor
+    runOptions: inline
+    inline: |
       echo "Cloning repository and switching to branch..."
       mkdir -p ~/project
       cd ~/project
       if [ ! -d .git ]; then
-        git clone https://$GITHUB_PAT:x-oauth-basic@${REPO_URL} .
+        git clone https://${GITHUB_PAT}:x-oauth-basic@${REPO_URL}.git .
       fi
       git checkout ${BRANCH_NAME}
       git pull origin ${BRANCH_NAME}
