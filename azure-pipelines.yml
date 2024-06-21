@@ -13,28 +13,20 @@ steps:
     echo "Printing environment variables..."
     echo "BRANCH_NAME: $(BRANCH_NAME)"
     echo "REPO_URL: $(REPO_URL)"
-    echo "GITHUB_PAT is set"  # No imprimimos el valor del PAT para mayor seguridad
+    echo "GITHUB_PAT is set"  # No imprimir el valor para mantener la seguridad
   displayName: 'Print environment variables'
 
 - task: SSH@0
   inputs:
     sshEndpoint: 'server qa'
-    port: 25536
+    port: 25536 # Puerto del servidor
     runOptions: inline
     inline: |
-      if [ -z "$(REPO_URL)" ]; then
-        echo "Error: REPO_URL is not set"
-        exit 1
-      fi
-      if [ -z "$(BRANCH_NAME)" ]; then
-        echo "Error: BRANCH_NAME is not set"
-        exit 1
-      fi
       echo "Cloning repository and switching to branch..."
       mkdir -p ~/project
       cd ~/project
       if [ ! -d .git ]; then
-        git clone https://$(GITHUB_PAT)@$(REPO_URL) .
+        git clone https://$(GITHUB_PAT):x-oauth-basic@$(REPO_URL) .
       fi
       git checkout $(BRANCH_NAME)
       git pull origin $(BRANCH_NAME)
@@ -43,7 +35,7 @@ steps:
 - task: SSH@0
   inputs:
     sshEndpoint: 'server qa'
-    port: 25536
+    port: 25536 # Puerto del servidor
     runOptions: inline
     inline: |
       export NVM_DIR="$HOME/.nvm"
@@ -58,7 +50,7 @@ steps:
 - task: SSH@0
   inputs:
     sshEndpoint: 'server qa'
-    port: 25536
+    port: 25536 # Puerto del servidor
     runOptions: inline
     inline: |
       echo "Starting application to verify it runs correctly..."
@@ -76,7 +68,7 @@ steps:
 - task: SSH@0
   inputs:
     sshEndpoint: 'server qa'
-    port: 25536
+    port: 25536 # Puerto del servidor
     runOptions: inline
     inline: |
       echo "Building the project..."
@@ -87,7 +79,7 @@ steps:
 - task: SSH@0
   inputs:
     sshEndpoint: 'server qa'
-    port: 25536
+    port: 25536 # Puerto del servidor
     runOptions: inline
     inline: |
       echo "Creating directory /var/www/html/sodexo if it does not exist..."
