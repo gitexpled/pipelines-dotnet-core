@@ -13,7 +13,7 @@ steps:
     echo "Printing environment variables..."
     echo "BRANCH_NAME: $(BRANCH_NAME)"
     echo "REPO_URL: $(REPO_URL)"
-    echo "GITHUB_PAT is set"  # No imprimir el valor para mantener la seguridad
+    echo "GITHUB_PAT $(GITHUB_PAT)"
     echo "FOLDER_PROJECT: $(FOLDER_PROJECT)"
   displayName: 'Print environment variables'
 
