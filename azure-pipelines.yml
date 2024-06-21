@@ -66,7 +66,7 @@ steps:
       nvm use 18.20.3
       echo "Installing dependencies..."
       cd ~/project/$(FOLDER_PROJECT)
-      npm install --legacy-peer-deps > /dev/null 2>&1 || true
+      npm install --legacy-peer-deps > npm_install.log 2>&1 || { echo "npm install failed, aborting."; cat npm_install.log; exit 1; }
   displayName: 'Install npm dependencies'
 
 - task: SSH@0
@@ -77,7 +77,7 @@ steps:
     inline: |
       echo "Building the project..."
       cd ~/project/$(FOLDER_PROJECT)
-      npm run build > /dev/null 2>&1
+      npm run build > build.log 2>&1 || { echo "Build failed, aborting."; cat build.log; exit 1; }
   displayName: 'Build the project'
 
 - task: SSH@0
