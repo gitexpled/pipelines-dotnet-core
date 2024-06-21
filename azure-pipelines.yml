@@ -99,5 +99,5 @@ steps:
       echo "Cleaning up old files..."
       sudo rm -rf /var/www/html/sodexo/*
       echo "Copying built files to /var/www/html/sodexo..."
-      #sudo cp -r ~/project/$(FOLDER_PROJECT)/build/* /var/www/html/sodexo/
+      sudo cp -r ~/project/$(FOLDER_PROJECT)/build/* /var/www/html/sodexo/
   displayName: 'Copy built files to destination'
