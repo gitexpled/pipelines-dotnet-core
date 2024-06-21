@@ -6,35 +6,44 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
-- task: NodeTool@0
-  inputs:
-    versionSpec: 'v18.20.3'
-  displayName: 'Install Node.js'
-
-- script: |
-    echo "Listing files in the build sources directory:"
-    ls -al $(Build.SourcesDirectory)
-  displayName: 'List files for debugging'
-  
 - task: SSH@0
   inputs:
     sshEndpoint: 'server qa'
     runOptions: inline
     inline: |
-      echo "Connection successful"
-  displayName: 'Verify SSH Connection'
+      echo "Checking if NVM is installed..."
+      if ! command -v nvm &> /dev/null
+      then
+        echo "NVM not found, installing..."
+        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.2/install.sh | bash
+        export NVM_DIR="$HOME/.nvm"
+        [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+      else
+        echo "NVM is already installed"
+        export NVM_DIR="$HOME/.nvm"
+        [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+      fi
+      echo "Installing Node.js v18.20.3..."
+      nvm install 18.20.3
+      nvm use 18.20.3
+      nvm alias default 18.20.3
+  displayName: 'Install and configure NVM and Node.js'
 
-- script: |
-    echo "Installing dependencies and building the project..."
-    npm install
-    npm run build
-  workingDirectory: $(Build.SourcesDirectory)
-  displayName: 'Build Project'
+- task: SSH@0
+  inputs:
+    sshEndpoint: 'server qa'
+    runOptions: inline
+    inline: |
+      echo "Creating directory /var/www/html/sodexo if it does not exist..."
+      mkdir -p /var/www/html/sodexo
+      echo "Listing files in the directory:"
+      ls -al /var/www/html/sodexo
+  displayName: 'Create directory if it does not exist'
 
 - task: CopyFilesOverSSH@0
   inputs:
     sshEndpoint: 'server qa'
-    sourceFolder: '$(Build.SourcesDirectory)/build'
+    sourceFolder: '$(Build.SourcesDirectory)'
     contents: '**'
     targetFolder: '/var/www/html/sodexo'
     cleanTargetFolder: true
@@ -45,8 +54,22 @@ steps:
     sshEndpoint: 'server qa'
     runOptions: inline
     inline: |
-      echo "Starting application..."
+      export NVM_DIR="$HOME/.nvm"
+      [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+      echo "Installing dependencies and building the project..."
       cd /var/www/html/sodexo
       npm install
+      npm run build
+  displayName: 'Build Project'
+
+- task: SSH@0
+  inputs:
+    sshEndpoint: 'server qa'
+    runOptions: inline
+    inline: |
+      export NVM_DIR="$HOME/.nvm"
+      [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+      echo "Starting application..."
+      cd /var/www/html/sodexo
       npm start
   displayName: 'Start Application on Server'
