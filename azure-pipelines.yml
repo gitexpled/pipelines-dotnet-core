@@ -23,6 +23,9 @@ steps:
     port: 25536
     runOptions: inline
     inline: |
+      echo "Setting up Git global configuration..."
+      git config --global user.name "$(GITHUB_USER)"
+      git config --global user.email "$(GITHUB_EMAIL)"
       echo "Cloning repository and switching to branch..."
       mkdir -p ~/project/$(FOLDER_PROJECT)
       cd ~/project/$(FOLDER_PROJECT)
