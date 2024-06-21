@@ -19,6 +19,8 @@ steps:
       mkdir -p ~/.ssh
       # Guardar la clave privada en un archivo temporal para verificación
       echo "${GITHUB_SSH_KEY}" | tr -d '\r' > ~/.ssh/id_rsa_temp
+      # Mostrar la clave para verificar su formato
+      echo "Contents of id_rsa_temp:"
       cat ~/.ssh/id_rsa_temp
       # Verificar que la clave se haya guardado correctamente
       ssh-keygen -y -f ~/.ssh/id_rsa_temp > /dev/null 2>&1
