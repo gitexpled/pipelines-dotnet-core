@@ -26,7 +26,8 @@ steps:
       mkdir -p ~/project
       cd ~/project
       if [ ! -d .git ]; then
-        git clone https://$(GITHUB_PAT):x-oauth-basic@$(REPO_URL) .
+        REPO_URL=$(echo $(REPO_URL) | sed 's|https://||')
+        git clone https://$(GITHUB_PAT):x-oauth-basic@$REPO_URL .
       fi
       git checkout $(BRANCH_NAME)
       git pull origin $(BRANCH_NAME)
