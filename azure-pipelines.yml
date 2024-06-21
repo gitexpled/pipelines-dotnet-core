@@ -12,6 +12,7 @@ steps:
 - task: SSH@0
   inputs:
     sshEndpoint: 'server qa'
+    port: 25536 # Puerto del servidor
     runOptions: inline
     inline: |
       echo "Setting up SSH key for GitHub..."
@@ -97,7 +98,7 @@ steps:
       sudo mkdir -p /var/www/html/sodexo
       sudo chown $(whoami):$(whoami) /var/www/html/sodexo
       echo "Cleaning up old files..."
-      rm -rf /var/www/html/sodexo/*
+      sudo rm -rf /var/www/html/sodexo/*
       echo "Copying built files to /var/www/html/sodexo..."
-      cp -r ~/project/build/* /var/www/html/sodexo/
+      sudo cp -r ~/project/build/* /var/www/html/sodexo/
   displayName: 'Copy built files to destination'
