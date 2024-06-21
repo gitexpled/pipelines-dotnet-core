@@ -50,6 +50,12 @@ steps:
           git pull origin $(BRANCH_NAME) || true
         fi
       fi
+
+      # Ignorar mensaje de "Already up to date"
+      git_status=$(git status)
+      if echo "$git_status" | grep -q "Your branch is up to date"; then
+        echo "Branch is already up to date, continuing..."
+      fi
   displayName: 'Clone GitHub repository and pull latest changes'
 
 - task: SSH@0
@@ -107,6 +113,4 @@ steps:
       sudo chown $(whoami):$(whoami) /var/www/html/sodexo
       echo "Cleaning up old files..."
       sudo rm -rf /var/www/html/sodexo/*
-      echo "Copying built files to /var/www/html/sodexo..."
-      sudo cp -r ~/project/$(FOLDER_PROJECT)/build/* /var/www/html/sodexo/
-  displayName: 'Copy built files to destination'
+      e
