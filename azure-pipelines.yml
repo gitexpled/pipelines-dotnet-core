@@ -5,7 +5,80 @@ trigger:
 pool:
   vmImage: ubuntu-latest
 
+variables:
+  GITHUB_SSH_KEY: $(GITHUB_SSH_KEY) # Define la variable en Azure DevOps
+  BRANCH_NAME: $(BRANCH_NAME) # Define la variable en Azure DevOps
+  REPO_URL: $(REPO_URL) # Define la variable en Azure DevOps
+
 steps:
+- task: SSH@0
+  inputs:
+    sshEndpoint: 'server qa'
+    runOptions: inline
+    inline: |
+      echo "Setting up SSH key for GitHub..."
+      mkdir -p ~/.ssh
+      echo "$GITHUB_SSH_KEY" > ~/.ssh/id_rsa
+      chmod 600 ~/.ssh/id_rsa
+      ssh-keyscan github.com >> ~/.ssh/known_hosts
+  displayName: 'Set up SSH key for GitHub'
+
+- task: SSH@0
+  inputs:
+    sshEndpoint: 'server qa'
+    runOptions: inline
+    inline: |
+      echo "Cloning repository and switching to branch..."
+      mkdir -p ~/project
+      cd ~/project
+      if [ ! -d .git ]; then
+        git clone $REPO_URL .
+      fi
+      git checkout $BRANCH_NAME
+      git pull origin $BRANCH_NAME
+  displayName: 'Clone GitHub repository and pull latest changes'
+
+- task: SSH@0
+  inputs:
+    sshEndpoint: 'server qa'
+    runOptions: inline
+    inline: |
+      export NVM_DIR="$HOME/.nvm"
+      [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+      echo "Using Node.js v18.20.3..."
+      nvm use 18.20.3
+      echo "Installing dependencies..."
+      cd ~/project
+      npm install
+  displayName: 'Install npm dependencies'
+
+- task: SSH@0
+  inputs:
+    sshEndpoint: 'server qa'
+    runOptions: inline
+    inline: |
+      echo "Starting application to verify it runs correctly..."
+      cd ~/project
+      npm start &
+      sleep 10
+      if ! pgrep -f "npm start"; then
+        echo "Application did not start correctly, aborting."
+        exit 1
+      fi
+      echo "Application started successfully, stopping it..."
+      pkill -f "npm start"
+  displayName: 'Start application to verify'
+
+- task: SSH@0
+  inputs:
+    sshEndpoint: 'server qa'
+    runOptions: inline
+    inline: |
+      echo "Building the project..."
+      cd ~/project
+      npm run build
+  displayName: 'Build the project'
+
 - task: SSH@0
   inputs:
     sshEndpoint: 'server qa'
@@ -14,40 +87,8 @@ steps:
       echo "Creating directory /var/www/html/sodexo if it does not exist..."
       sudo mkdir -p /var/www/html/sodexo
       sudo chown $(whoami):$(whoami) /var/www/html/sodexo
-      echo "Listing files in the directory:"
-      ls -al /var/www/html/sodexo
-  displayName: 'Create directory if it does not exist'
-
-- task: CopyFilesOverSSH@0
-  inputs:
-    sshEndpoint: 'server qa'
-    sourceFolder: '$(Build.SourcesDirectory)'
-    contents: '**'
-    targetFolder: '/var/www/html/sodexo'
-    cleanTargetFolder: true
-  displayName: 'Copy Files to /var/www/html/sodexo'
-
-- task: SSH@0
-  inputs:
-    sshEndpoint: 'server qa'
-    runOptions: inline
-    inline: |
-      export NVM_DIR="$HOME/.nvm"
-      [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-      echo "Installing dependencies and building the project..."
-      cd /var/www/html/sodexo
-      npm install
-      npm run build
-  displayName: 'Build Project'
-
-- task: SSH@0
-  inputs:
-    sshEndpoint: 'server qa'
-    runOptions: inline
-    inline: |
-      export NVM_DIR="$HOME/.nvm"
-      [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-      echo "Starting application..."
-      cd /var/www/html/sodexo
-      npm start
-  displayName: 'Start Application on Server'
+      echo "Cleaning up old files..."
+      rm -rf /var/www/html/sodexo/*
+      echo "Copying built files to /var/www/html/sodexo..."
+      cp -r ~/project/build/* /var/www/html/sodexo/
+  displayName: 'Copy built files to destination'
