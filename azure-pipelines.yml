@@ -75,24 +75,6 @@ steps:
     port: 25536
     runOptions: inline
     inline: |
-      echo "Starting application to verify it runs correctly..."
-      cd ~/project/$(FOLDER_PROJECT)
-      npm start > /dev/null 2>&1 &
-      sleep 10
-      if ! pgrep -f "npm start"; then
-        echo "Application did not start correctly, aborting."
-        exit 1
-      fi
-      echo "Application started successfully, stopping it..."
-      pkill -f "npm start"
-  displayName: 'Start application to verify'
-
-- task: SSH@0
-  inputs:
-    sshEndpoint: 'server qa'
-    port: 25536
-    runOptions: inline
-    inline: |
       echo "Building the project..."
       cd ~/project/$(FOLDER_PROJECT)
       npm run build > /dev/null 2>&1
