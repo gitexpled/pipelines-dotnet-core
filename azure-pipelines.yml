@@ -27,6 +27,7 @@ steps:
       mkdir -p ~/project/$(FOLDER_PROJECT)
       cd ~/project/$(FOLDER_PROJECT)
       if [ ! -d .git ]; then
+        echo "Cloning repository for the first time..."
         REPO_URL=$(echo $(REPO_URL) | sed 's|https://||')
         git clone https://$(GITHUB_PAT):x-oauth-basic@$REPO_URL .
         git checkout $(BRANCH_NAME)
@@ -35,6 +36,7 @@ steps:
         git fetch origin
         git checkout $(BRANCH_NAME)
       fi
+      echo "Pulling latest changes..."
       git pull origin $(BRANCH_NAME)
   displayName: 'Clone GitHub repository and pull latest changes'
 
