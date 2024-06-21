@@ -67,6 +67,7 @@ steps:
       echo "Installing dependencies..."
       cd ~/project/$(FOLDER_PROJECT)
       npm install || { echo "npm install failed, aborting."; exit 1; }
+      npm audit fix --force || true
   displayName: 'Install npm dependencies'
 
 - task: SSH@0
