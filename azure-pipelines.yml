@@ -24,8 +24,13 @@ steps:
     runOptions: inline
     inline: |
       echo "Setting up Git global configuration..."
-      git config --global user.name "$(GIT_USERNAME)"
-      git config --global user.email "$(GIT_EMAIL)"
+      if [ -z "$(git config --global user.name)" ]; then
+        git config --global user.name "$(GIT_USERNAME)"
+      fi
+      if [ -z "$(git config --global user.email)" ]; then
+        git config --global user.email "$(GIT_EMAIL)"
+      fi
+
       echo "Cloning repository and switching to branch..."
       mkdir -p ~/project/$(FOLDER_PROJECT)
       cd ~/project/$(FOLDER_PROJECT)
