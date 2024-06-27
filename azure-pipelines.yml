@@ -1,7 +1,8 @@
 trigger:
-- prd
-- master
-
+  branches:
+    include:
+      - prd
+      - master
 pool:
   vmImage: ubuntu-latest
 
